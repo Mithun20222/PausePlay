@@ -1,23 +1,30 @@
 {
-  "manifest_version": 3,
-  "name": "PausePlay - Gamer Burnout Detector",
-  "version": "1.0",
-  "description": "Detect gaming burnout using facial emotion and screen time",
-  "permissions": ["activeTab", "scripting", "storage", "notifications"],
-  "background": {
-    "service_worker": "background.js"
-  },
-  "action": {
-    "default_popup": "popup.html",
-    "default_icon": "icon.png"
-  },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
-    }
-  ],
-  "icons": {
-    "128": "icon.png"
+    "manifest_version": 2,
+    "name": "PausePlay",
+    "description": "AI-based plugin for detecting gamer burnout.",
+    "version": "1.0",
+    "permissions": [
+      "activeTab",
+      "tabs",
+      "webNavigation",
+      "storage",
+      "camera",
+      "notifications",
+      "scripting"
+    ],
+    "browser_action": {
+      "default_popup": "popup.html",
+      "default_icon": "icon.png"
+    },
+    "background": {
+      "scripts": ["background.js"],
+      "persistent": false
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"]
+      }
+    ]
   }
-}
+  
