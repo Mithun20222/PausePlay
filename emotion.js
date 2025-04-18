@@ -2,9 +2,9 @@ const video = document.getElementById('videoFeed');
 let sleepyFrames = 0;
 
 Promise.all([
-  faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
-  faceapi.nets.faceExpressionNet.loadFromUri('/models'),
-  faceapi.nets.faceLandmark68Net.loadFromUri('/models')
+  faceapi.nets.tinyFaceDetector.loadFromUri(chrome.runtime.getURL('models')),
+  faceapi.nets.faceExpressionNet.loadFromUri(chrome.runtime.getURL('models')),
+  faceapi.nets.faceLandmark68Net.loadFromUri(chrome.runtime.getURL('models'))
 ]).then(startVideo);
 
 function startVideo() {
@@ -45,6 +45,8 @@ video.addEventListener('play', () => {
       const rightEye = landmarks.getRightEye();
       const ear = (getEAR(leftEye) + getEAR(rightEye)) / 2;
 
+      const timestamp = new Date().toLocaleTimeString();
+
       // Sleepy detection
       if (ear < 0.25) {
         sleepyFrames++;
@@ -53,10 +55,12 @@ video.addEventListener('play', () => {
       }
 
       if (sleepyFrames >= 10) {
-        chrome.runtime.sendMessage({
-          command: "emotionAlert",
-          emotion: "drowsiness 😴"
-        });
+        const alert = {
+          emotion: "drowsiness 😴",
+          timestamp: timestamp
+        };
+        chrome.storage.local.set({ lastEmotion: alert });
+        chrome.runtime.sendMessage({ type: "ALERT", ...alert });
         sleepyFrames = 0;
       }
 
@@ -67,14 +71,13 @@ video.addEventListener('play', () => {
         expressions.fearful > 0.6 ||
         expressions.disgusted > 0.6
       ) {
-        chrome.runtime.sendMessage({
-          command: "emotionAlert",
-          emotion: "stress/frustration 😠"
-        });
+        const alert = {
+          emotion: "stress/frustration 😠",
+          timestamp: timestamp
+        };
+        chrome.storage.local.set({ lastEmotion: alert });
+        chrome.runtime.sendMessage({ type: "ALERT", ...alert });
       }
     }
   }, 1000);
 });
-faceapi.nets.tinyFaceDetector.loadFromUri('/models')
-faceapi.nets.faceExpressionNet.loadFromUri('/models')
-faceapi.nets.faceLandmark68Net.loadFromUri('/models')

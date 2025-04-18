@@ -1,13 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PausePlay</title>
   <link rel="stylesheet" href="style.css">
+  <script src="face-api.min.js"></script>
 </head>
 <body>
-  <h2>🎮 PausePlay</h2>
+  <h2>PausePlay</h2>
   <button id="startBtn">Start Monitoring</button>
   <p id="status">Status: Idle</p>
+  <p>Time: <span id="timer">0</span> seconds</p> <!-- Timer display -->
+  <div id="emotionStatus">
+    <p>Current Emotion: <span id="currentEmotion">-</span></p>
+    <p>Last Alert: <span id="lastAlert">None</span></p>
+  </div>
+
+  <footer>
+    Stay healthy, gamer ✨
+  </footer>
+
   <script src="popup.js"></script>
 </body>
 </html>

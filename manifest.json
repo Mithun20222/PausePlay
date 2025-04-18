@@ -1,29 +1,45 @@
 {
-    "manifest_version": 3,
-    "name": "PausePlay",
-    "description": "AI-based plugin for detecting gamer burnout.",
-    "version": "1.0",
-    "permissions": [
-      "activeTab",
-      "storage",
-      "notifications",
-      "scripting"
+  "manifest_version": 3,
+  "name": "PausePlay",
+  "description": "AI-based plugin for detecting gamer burnout.",
+  "version": "1.0",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "notifications",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png",
+    "default_title": "PausePlay: Emotion Monitor"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "face-api.min.js",
+        "content.js"
+      ]
+    }
+  ],
+  "web_accessible_resources": [{
+    "resources": [
+      "models/*",
+      "face-api.min.js"
     ],
-    "host_permissions": [
-      "<all_urls>"
-    ],
-    "action": {
-      "default_popup": "popup.html",
-      "default_icon": "icon.png"
-    },
-    "background": {
-      "service_worker": "background.js",
-      "type": "module"
-    },
-    "content_scripts": [
-      {
-        "matches": ["<all_urls>"],
-        "js": ["content.js"]
-      }
-    ]
+    "matches": ["<all_urls>"]
+  }],
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  }
 }
