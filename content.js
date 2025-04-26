@@ -5,6 +5,81 @@ let isModelLoaded = false;
 let sleepyFrameCount = 0;
 const EAR_THRESHOLD = 0.22;
 const EAR_CONSEC_FRAMES = 5;
+const EXERCISE_INTERVAL = 60000; // 1 minute in milliseconds
+let exerciseInterval = null;
+
+// Function to create and show exercise popup
+function showExercisePopup() {
+  const popup = document.createElement('div');
+  popup.style.cssText = `
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    z-index: 10001;
+    text-align: center;
+  `;
+
+  const exerciseContainer = document.createElement('div');
+  exerciseContainer.style.cssText = `
+    width: 400px;
+    height: 300px;
+    margin-bottom: 20px;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  `;
+
+  // Placeholder for exercise image/video
+  const exerciseContent = document.createElement('div');
+  exerciseContent.innerHTML = `
+    <img src="${chrome.runtime.getURL('assets/exercises/breathing.gif')}" 
+         alt="Breathing Exercise" 
+         style="max-width: 100%; max-height: 100%;">
+  `;
+
+  const closeButton = document.createElement('button');
+  closeButton.textContent = 'Close';
+  closeButton.style.cssText = `
+    padding: 10px 20px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  `;
+
+  closeButton.onclick = () => popup.remove();
+
+  exerciseContainer.appendChild(exerciseContent);
+  popup.appendChild(exerciseContainer);
+  popup.appendChild(closeButton);
+  document.body.appendChild(popup);
+}
+
+// Function to start exercise reminders
+function startExerciseReminders() {
+  if (exerciseInterval) {
+    clearInterval(exerciseInterval);
+  }
+  
+  exerciseInterval = setInterval(() => {
+    showExercisePopup();
+  }, EXERCISE_INTERVAL);
+}
+
+// Function to stop exercise reminders
+function stopExerciseReminders() {
+  if (exerciseInterval) {
+    clearInterval(exerciseInterval);
+    exerciseInterval = null;
+  }
+}
 
 // Load face-api models
 async function loadModels() {
@@ -60,6 +135,7 @@ function addCameraAndDetect() {
     .then((stream) => {
       videoElement.srcObject = stream;
       startEmotionDetection();
+      startExerciseReminders(); // Start exercise reminders
     })
     .catch((err) => {
       console.error("Error accessing camera:", err);
@@ -83,6 +159,7 @@ function stopMonitoring() {
     clearInterval(emotionDetectionInterval);
     emotionDetectionInterval = null;
   }
+  stopExerciseReminders(); // Stop exercise reminders
 }
 
 function calculateEAR(eye) {
@@ -159,8 +236,8 @@ function startEmotionDetection() {
     const emotion = await detectEmotion();
     console.log("Detected emotion:", emotion);
 
-    if (["angry", "tired", "sleepy"].includes(emotion)) {
+    if (["angry", "tired", "sleepy", "happy"].includes(emotion)) {
       chrome.runtime.sendMessage({ type: "ALERT", emotion });
     }
-  }, 2000);
+  }, 5000);
 }
