@@ -1,5 +1,5 @@
 // background.js
-
+let nointerval = 0;
 // Request notification permission when extension is installed
 chrome.runtime.onInstalled.addListener(() => {
   chrome.notifications.getPermissionLevel((level) => {
